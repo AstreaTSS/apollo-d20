@@ -42,7 +42,7 @@ comma: ","
 ?dice: diceexpr (dice_op | explode_op)*
 
 dice_op: (DICE_OPERATOR | SET_OPERATOR) selector
-DICE_OPERATOR: "rr"  | "ra" | "mi" | "ma"
+DICE_OPERATOR: "rr" | "ro" | "mi" | "ma"
 
 diceexpr: INTEGER? "d" DICE_VALUE
 
@@ -51,7 +51,7 @@ DICE_VALUE: INTEGER | "%"
 selector: [SELTYPE] INTEGER
 
 explode_op: EXPLODE_OPERATOR explode_selector
-EXPLODE_OPERATOR: "!" | "e" | "ro"
+EXPLODE_OPERATOR: "!" | "e" | "ra"
 
 explode_selector: [SELTYPE] [INTEGER]
 
