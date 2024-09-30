@@ -192,7 +192,7 @@ class MarkdownStringifier(SimpleStringifier):
         the_rolls = []
         for val in node.values:
             inside = self._stringify(val)
-            if val.number == 1 or val.number == node.size:
+            if val.number == 1 or val.number == node.size or val.exploded:
                 inside = f"**{inside}**"
             the_rolls.append(inside)
         return ", ".join(the_rolls)

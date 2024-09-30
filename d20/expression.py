@@ -605,7 +605,7 @@ class ExplodeOperator:  # explode_op
                 if batch_max == 0:
                     break
 
-            out.update(selector.select(target, max_targets=batch_max, use_target_if_num_none=True))
+            out.update(selector.select(target, max_targets=batch_max, is_explosion=True))
         return out
 
     def operate(self, target):
@@ -670,7 +670,7 @@ class SetSelector:  # selector
     def from_ast(cls, node):
         return cls(node.cat, node.num)
 
-    def select(self, target, max_targets=None, use_target_if_num_none=False):
+    def select(self, target, max_targets=None, is_explosion=False):
         """
         Selects operands from a target set.
 
@@ -680,14 +680,25 @@ class SetSelector:  # selector
         :return: The targets in the set.
         :rtype: set of Number
         """
-        if self.num is None and use_target_if_num_none:
+        if self.num is None and is_explosion:
             num = target.size
         else:
             num = self.num
 
-        selectors = {"l": self.lowestn, "h": self.highestn, "<": self.lessthan, ">": self.morethan, None: self.literal}
+        selectors = {
+            "l": self.lowestn,
+            "h": self.highestn,
+            "<": self.lessthan,
+            ">": self.morethan,
+            ">=": self.moreorequalthan,
+            None: self.literal,
+        }
 
-        selected = selectors[self.cat](num, target)
+        if not is_explosion:
+            selected = selectors[self.cat](num, target)
+        else:
+            selected = selectors[">="](num, target)
+
         if max_targets is not None:
             selected = selected[:max_targets]
         return set(selected)
@@ -703,6 +714,9 @@ class SetSelector:  # selector
 
     def morethan(self, num, target):
         return [n for n in target.keptset if n.total > num]
+
+    def moreorequalthan(self, num, target):
+        return [n for n in target.keptset if n.total >= num]
 
     def literal(self, num, target):
         return [n for n in target.keptset if n.total == num]

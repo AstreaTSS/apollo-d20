@@ -210,6 +210,10 @@ def test_e_op():
     assert r("1d2e2") % 2 == 1
     assert r("1d2!") % 2 == 1
     assert r("1d2!2") % 2 == 1
+
+    assert roll("1d3!2").expr.roll.values[-1].number == 1
+    assert roll("1d3e2").expr.roll.values[-1].number == 1
+
     with pytest.raises(TooManyRolls):
         r("1d1e1")
     with pytest.raises(TooManyRolls):
