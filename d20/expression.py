@@ -693,10 +693,10 @@ class SetSelector:  # selector
         return set(selected)
 
     def lowestn(self, num, target):
-        return sorted(target.keptset, key=lambda n: n.total)[: num]
+        return sorted(target.keptset, key=lambda n: n.total)[:num]
 
     def highestn(self, num, target):
-        return sorted(target.keptset, key=lambda n: n.total, reverse=True)[: num]
+        return sorted(target.keptset, key=lambda n: n.total, reverse=True)[:num]
 
     def lessthan(self, num, target):
         return [n for n in target.keptset if n.total < num]
