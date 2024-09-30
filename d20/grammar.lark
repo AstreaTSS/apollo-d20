@@ -51,7 +51,7 @@ DICE_VALUE: INTEGER | "%"
 selector: [SELTYPE] INTEGER
 
 explode_op: EXPLODE_OPERATOR explode_selector
-EXPLODE_OPERATOR: "!" | "e" | "ra"
+EXPLODE_OPERATOR: "!" | "e" | "ra" | "eo"
 
 explode_selector: [SELTYPE] [INTEGER]
 

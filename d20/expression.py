@@ -617,6 +617,7 @@ class ExplodeOperator:  # explode_op
         """
         operations = {
             "ra": self.explode_once,
+            "eo": self.explode_once,
             "e": self.explode,
             "!": self.explode,
         }
