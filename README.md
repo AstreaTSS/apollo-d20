@@ -1,11 +1,12 @@
-# d20
+# apollo-d20
 
-[![PyPI version shields.io](https://img.shields.io/pypi/v/d20.svg)](https://pypi.python.org/pypi/d20/)
-[![PyPI license](https://img.shields.io/pypi/l/d20.svg)](https://pypi.python.org/pypi/d20/)
-[![PyPI pyversions](https://img.shields.io/pypi/pyversions/d20.svg)](https://pypi.python.org/pypi/d20/)
-![](https://github.com/zhudotexe/d20/workflows/Test%20Package/badge.svg)
-[![codecov](https://codecov.io/gh/zhudotexe/d20/branch/master/graph/badge.svg)](https://codecov.io/gh/zhudotexe/d20)
-[![Documentation Status](https://readthedocs.org/projects/d20/badge/?version=latest)](https://d20.readthedocs.io/en/latest/start.html?badge=latest)
+[![PyPI version shields.io](https://img.shields.io/pypi/v/apollo-d20.svg)](https://pypi.python.org/pypi/apollo-d20/)
+[![PyPI license](https://img.shields.io/pypi/l/apollo-d20.svg)](https://pypi.python.org/pypi/apollo-d20/)
+[![PyPI pyversions](https://img.shields.io/pypi/pyversions/apollo-d20.svg)](https://pypi.python.org/pypi/apollo-d20/)
+![](https://github.com/AstreaTSS/apollo-d20/workflows/Test%20Package/badge.svg)
+
+A fork of [d20](https://github.com/zhudotexe/d20) to be used with [PYTHIA](https://github.com/AstreaTSS/PYTHIA).
+Below is a copy of the original README with some modifications to reflect the changes made in this fork.
 
 A fast, powerful, and extensible dice engine for D&D, d20 systems, and any other system that needs dice!
 
@@ -22,12 +23,12 @@ A fast, powerful, and extensible dice engine for D&D, d20 systems, and any other
 **Requires Python 3.6+**.
 
 ```bash
-pip install d20
+pip install apollo-d20
 ```
 
-If `numpy` is installed, `d20` will use an RNG algorithm supplied in NumPy (PCG64 or PCG64DXSM) rather than the Python
+If `numpy` is installed, `apollo-d20` will use an RNG algorithm supplied in NumPy (PCG64 or PCG64DXSM) rather than the Python
 default (MT2002). See [this issue](https://github.com/avrae/d20/issues/7) for more details. You can install `d20` with
-NumPy by using `pip install "d20[numpy]"`.
+NumPy by using `pip install "apollo-d20[numpy]"`.
 
 ## Quickstart
 
@@ -46,7 +47,7 @@ NumPy by using `pip install "d20[numpy]"`.
 
 ## Documentation
 
-Check out the docs on [Read the Docs](https://d20.readthedocs.io/en/latest/start.html)!
+TODO
 
 ## Dice Syntax
 
@@ -86,7 +87,7 @@ Operators are always followed by a selector, and operate on the items in the set
 | rr     | reroll         | Rerolls all matched values until none match. (Dice only)                     |
 | ro     | reroll once    | Rerolls all matched values once. (Dice only)                                 |
 | ra     | reroll and add | Rerolls up to one matched value once, keeping the original roll. (Dice only) |
-| e      | explode on     | Rolls another die for each matched value. (Dice only)                        |
+| e, !   | explode on     | Rolls another die for each matched value. (Dice only)                        |
 | mi     | minimum        | Sets the minimum value of each die. (Dice only)                              |
 | ma     | maximum        | Sets the maximum value of each die. (Dice only)                              |
 
@@ -231,7 +232,7 @@ objects, which can be accessed as such:
 or, in a easier-to-read format,
 
 ```text
-<Expression 
+<Expression
     roll=<BinOp
         left=<BinOp
             left=<Dice

@@ -217,6 +217,7 @@ def test_e_op():
     with pytest.raises(TooManyRolls):
         r("1d1!")
 
+
 def test_mi_op():
     assert r("10d6mi6") == 60
     assert r("10d6mi10") == 100

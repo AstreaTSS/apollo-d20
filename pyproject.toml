@@ -3,15 +3,16 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "d20"
-version = "1.1.2"
+name = "apollo-d20"
 authors = [
     { name = "Andrew Zhu", email = "andrew@zhu.codes" },
+    { name = "AstreaTSS" },
 ]
-description = "A formal grammar-based dice parser and roller for D&D and other dice systems."
+description = "A fork of d20 to be used with PYTHIA. "
 readme = "README.md"
 license = { file = "LICENSE" }
 requires-python = ">=3.6"
+dynamic = ["version"]
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
@@ -28,12 +29,18 @@ dependencies = [
 
 [project.optional-dependencies]
 numpy = [
-    "numpy>=1.17.0,<2.0.0",
+    "numpy>=1.17.0,<3.0.0",
 ]
 
 [project.urls]
-"Homepage" = "https://github.com/zhudotexe/d20"
-"Bug Tracker" = "https://github.com/zhudotexe/d20/issues"
+"Homepage" = "https://github.com/AstreaTSS/apollo-d20"
+"Bug Tracker" = "https://github.com/AstreaTSS/apollo-d20/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["d20"]
+
+[tool.hatch.version]
+path = "d20/__init__.py"
 
 [tool.black]
 line-length = 120

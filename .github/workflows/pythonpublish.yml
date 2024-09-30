@@ -1,39 +1,27 @@
-name: Upload Python Package
-
+name: Publish package
 on:
   release:
-    types: [ created ]
-  workflow_dispatch:
-    inputs:
-      deploy_to_pypi:
-        type: boolean
-        description: Deploy the build to PyPI from this manual release.
+    types: [created]
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    environment:
-      name: pypi
-      url: https://pypi.org/p/d20
-    permissions:
-      id-token: write
     steps:
       - uses: actions/checkout@v3
-
-      - name: Set up Python 3.10
+      - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
-
+          cache: 'pip'
+          cache-dependency-path: '**/requirements*.txt'
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install build
-          mkdir dist
-
-      - name: Build
-        run: python -m build --sdist --wheel --outdir dist/ .
-
-      - name: Publish to PyPI
-        if: startsWith(github.ref, 'refs/tags') || inputs.deploy_to_pypi
-        uses: pypa/gh-action-pypi-publish@release/v1
+          python -m pip install hatch
+      - name: Publish a project to PyPi
+        run: |
+          hatch build
+          hatch publish
+        env:
+          HATCH_INDEX_USER: __token__
+          HATCH_INDEX_AUTH: ${{ secrets.PYPI_API_TOKEN }}
