@@ -208,11 +208,14 @@ def test_ra_op():
 
 def test_e_op():
     assert r("1d2e2") % 2 == 1
-    with pytest.raises(TooManyRolls):
-        r("1d20e<21")
+    assert r("1d2!") % 2 == 1
+    assert r("1d2!2") % 2 == 1
     with pytest.raises(TooManyRolls):
         r("1d1e1")
-
+    with pytest.raises(TooManyRolls):
+        r("1d1!1")
+    with pytest.raises(TooManyRolls):
+        r("1d1!")
 
 def test_mi_op():
     assert r("10d6mi6") == 60

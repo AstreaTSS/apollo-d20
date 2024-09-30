@@ -8,9 +8,9 @@ from . import custom_strategies as cst
 @settings(verbosity=Verbosity.verbose, max_examples=1000, deadline=3000)
 def test_any_valid_roll(expr):
     """Every valid dice expression should either return a valid result or raise a handled error"""
-    parsed = parse(expr)
+    parsed = parse(expr, allow_comments=True)
     try:
-        result = roll(parsed)
+        result = roll(parsed, allow_comments=True)
         assert result
         assert isinstance(result, RollResult)
         assert isinstance(result.result, str)
