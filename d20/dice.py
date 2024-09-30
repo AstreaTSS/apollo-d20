@@ -269,7 +269,10 @@ class Roller:
     def _eval_operatedset(self, node: ast.OperatedSet) -> ExpressionNode:
         target = self._eval(node.value)
         for op in node.operations:
-            the_op = SetOperator.from_ast(op)
+            if isinstance(op, ast.ExplodeOperator):
+                the_op = ExplodeOperator.from_ast(op)
+            else:
+                the_op = SetOperator.from_ast(op)
             the_op.operate(target)
             target.operations.append(the_op)
         return target

@@ -39,16 +39,21 @@ setexpr: "(" _WS? (num (_WS? "," _WS? num)* _WS? comma? _WS?)? _WS? ")"
 comma: ","
 
 // dice
-?dice: diceexpr dice_op*
+?dice: diceexpr (dice_op | explode_op)*
 
 dice_op: (DICE_OPERATOR | SET_OPERATOR) selector
-DICE_OPERATOR: "rr" | "ro" | "ra" | "e" | "mi" | "ma"
+DICE_OPERATOR: "rr"  | "ra" | "mi" | "ma"
 
 diceexpr: INTEGER? "d" DICE_VALUE
 
 DICE_VALUE: INTEGER | "%"
 
 selector: [SELTYPE] INTEGER
+
+explode_op: EXPLODE_OPERATOR explode_selector
+EXPLODE_OPERATOR: "!" | "e" | "ro"
+
+explode_selector: [SELTYPE] [INTEGER]
 
 SELTYPE: "l" | "h" | "<" | ">"
 

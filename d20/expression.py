@@ -14,6 +14,7 @@ __all__ = (
     "Dice",
     "Die",
     "SetOperator",
+    "ExplodeOperator",
     "SetSelector",
 )
 
@@ -500,8 +501,6 @@ class SetOperator:  # set_op, dice_op
             # dice only
             "rr": self.reroll,
             "ro": self.reroll_once,
-            "ra": self.explode_once,
-            "e": self.explode,
             "mi": self.minimum,
             "ma": self.maximum,
         }
@@ -541,29 +540,6 @@ class SetOperator:  # set_op, dice_op
         for die in self.select(target):
             die.reroll()
 
-    def explode(self, target):
-        """
-        :type target: Dice
-        """
-        to_explode = self.select(target)
-        already_exploded = set()
-
-        while to_explode:
-            for die in to_explode:
-                die.explode()
-                target.roll_another()
-
-            already_exploded.update(to_explode)
-            to_explode = self.select(target).difference(already_exploded)
-
-    def explode_once(self, target):
-        """
-        :type target: Dice
-        """
-        for die in self.select(target, max_targets=1):
-            die.explode()
-            target.roll_another()
-
     def minimum(self, target):  # immediate
         """
         :type target: Dice
@@ -595,6 +571,88 @@ class SetOperator:  # set_op, dice_op
         return f"<SetOperator op={self.op} sels={self.sels}>"
 
 
+class ExplodeOperator:  # explode_op
+    """Represents an operation on an explosion."""
+
+    __slots__ = ("op", "sels")
+
+    def __init__(self, op, sels):
+        """
+        :type op: str
+        :type sels: list[SetSelector]
+        """
+        self.op = op
+        self.sels = sels
+
+    @classmethod
+    def from_ast(cls, node):
+        return cls(node.op, [SetSelector.from_ast(n) for n in node.sels])
+
+    def select(self, target, max_targets=None):
+        """
+        Selects the operands in a target set.
+
+        :param target: The source of the operands.
+        :type target: Number
+        :param max_targets: The maximum number of targets to select.
+        :type max_targets: Optional[int]
+        """
+        out = set()
+        for selector in self.sels:
+            batch_max = None
+            if max_targets is not None:
+                batch_max = max_targets - len(out)
+                if batch_max == 0:
+                    break
+
+            out.update(selector.select(target, max_targets=batch_max, use_target_if_num_none=True))
+        return out
+
+    def operate(self, target):
+        """
+        Operates in place on the values in a target set.
+
+        :param target: The source of the operands.
+        :type target: Number
+        """
+        operations = {
+            "ra": self.explode_once,
+            "e": self.explode,
+            "!": self.explode,
+        }
+
+        operations[self.op](target)
+
+    def explode(self, target):
+        """
+        :type target: Dice
+        """
+        to_explode = self.select(target)
+        already_exploded = set()
+
+        while to_explode:
+            for die in to_explode:
+                die.explode()
+                target.roll_another()
+
+            already_exploded.update(to_explode)
+            to_explode = self.select(target).difference(already_exploded)
+
+    def explode_once(self, target):
+        """
+        :type target: Dice
+        """
+        for die in self.select(target, max_targets=1):
+            die.explode()
+            target.roll_another()
+
+    def __str__(self):
+        return "".join([f"{self.op}{str(sel)}" for sel in self.sels])
+
+    def __repr__(self):
+        return f"<ExplodeOperator op={self.op} sels={self.sels}>"
+
+
 class SetSelector:  # selector
     """Represents a selection on a set."""
 
@@ -612,7 +670,7 @@ class SetSelector:  # selector
     def from_ast(cls, node):
         return cls(node.cat, node.num)
 
-    def select(self, target, max_targets=None):
+    def select(self, target, max_targets=None, use_target_if_num_none=False):
         """
         Selects operands from a target set.
 
@@ -622,31 +680,38 @@ class SetSelector:  # selector
         :return: The targets in the set.
         :rtype: set of Number
         """
+        if self.num is None and use_target_if_num_none:
+            num = target.size
+        else:
+            num = self.num
+
         selectors = {"l": self.lowestn, "h": self.highestn, "<": self.lessthan, ">": self.morethan, None: self.literal}
 
-        selected = selectors[self.cat](target)
+        selected = selectors[self.cat](num, target)
         if max_targets is not None:
             selected = selected[:max_targets]
         return set(selected)
 
-    def lowestn(self, target):
-        return sorted(target.keptset, key=lambda n: n.total)[: self.num]
+    def lowestn(self, num, target):
+        return sorted(target.keptset, key=lambda n: n.total)[: num]
 
-    def highestn(self, target):
-        return sorted(target.keptset, key=lambda n: n.total, reverse=True)[: self.num]
+    def highestn(self, num, target):
+        return sorted(target.keptset, key=lambda n: n.total, reverse=True)[: num]
 
-    def lessthan(self, target):
-        return [n for n in target.keptset if n.total < self.num]
+    def lessthan(self, num, target):
+        return [n for n in target.keptset if n.total < num]
 
-    def morethan(self, target):
-        return [n for n in target.keptset if n.total > self.num]
+    def morethan(self, num, target):
+        return [n for n in target.keptset if n.total > num]
 
-    def literal(self, target):
-        return [n for n in target.keptset if n.total == self.num]
+    def literal(self, num, target):
+        return [n for n in target.keptset if n.total == num]
 
     def __str__(self):
         if self.cat:
             return f"{self.cat}{self.num}"
+        if self.num is None:
+            return ""
         return str(self.num)
 
     def __repr__(self):

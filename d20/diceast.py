@@ -54,12 +54,18 @@ class RollTransformer(Transformer):
     def dice_op(self, opsel):
         return SetOperator.new(*opsel)
 
+    def explode_op(self, opsel):
+        return ExplodeOperator.new(*opsel)
+
     def diceexpr(self, dice):
         if len(dice) == 1:
             return Dice(1, *dice)
         return Dice(*dice)
 
     def selector(self, sel):
+        return SetSelector(*sel)
+
+    def explode_selector(self, sel):
         return SetSelector(*sel)
 
     def comma(self, _):
@@ -318,6 +324,28 @@ class SetOperator:  # set_op, dice_op
         return "".join([f"{self.op}{str(sel)}" for sel in self.sels])
 
 
+class ExplodeOperator:  # set_op, dice_op
+    __slots__ = ("op", "sels")
+
+    def __init__(self, op, sels):
+        """
+        :type op: lark.Token or str
+        :type sels: list of SetSelector
+        """
+        self.op = str(op)
+        self.sels = sels
+
+    @classmethod
+    def new(cls, op, sel):
+        return cls(op, [sel])
+
+    def add_sels(self, sels):
+        self.sels.extend(sels)
+
+    def __str__(self):
+        return "".join([f"{self.op}{str(sel)}" for sel in self.sels])
+
+
 class SetSelector:  # selector
     __slots__ = ("cat", "num")
 
@@ -327,7 +355,7 @@ class SetSelector:  # selector
         :type num: int
         """
         self.cat = str(cat) if cat is not None else None
-        self.num = int(num)
+        self.num = int(num) if num is not None else None
 
     def __str__(self):
         if self.cat:
