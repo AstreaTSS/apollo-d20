@@ -9,4 +9,4 @@ _roller = Roller()
 roll = _roller.roll
 parse = _roller.parse
 
-__version__ = "1.2.0"
+__version__ = "1.2.1"
